@@ -25,17 +25,14 @@ namespace RhodesEquipment
 		private bool equip_edited, filters_edited = false;
 		static MySqlConnection _conx;
 		string EngOilFilStyle,PriFuelFilStyle,SecFuelFilStyle,OutAirFilStyle,InAirFilStyle,TranFilStyle;
-		//EngOilFilStyle = PriFuelFilStyle = SecFuelFilStyle = OutAirFilStyle = InAirFilStyle = TranFilStyle = "";
 		AddFilter af;
 		public static string _connectionString;
 
-	//public AddEquip(MySqlConnection conx) Changed
 	public AddEquip(string connectionString)
 	{
 		_connectionString = connectionString;
 		Text = "Manage Equipment";
 		Font f = new Font("Verdana", 10);
-		//_conx = conx; Added
 		ClientSize = new Size(500, 680);
 		Label IdLabel = new Label();
 		IdLabel.Text = "ID #";
@@ -59,7 +56,6 @@ namespace RhodesEquipment
 		EquipNumBox.Location = new Point(235, 10);
 		EquipNumBox.TabIndex = 0;
 		EquipNumBox.Leave += new System.EventHandler(EquipBoxHandler);
-		//EquipNumBox.Leave += (sender, e) => EquipBoxHandler(sender, e, (MySqlConnection) conx);
 		this.Controls.Add(EquipNumBox);
 		Label LicLabel = new Label();
 		LicLabel.Font = f;
@@ -214,9 +210,7 @@ namespace RhodesEquipment
 	{
 		string query = "SELECT id,num,year,make,model,lic,vin FROM equip WHERE num = \'" + EquipNumBox.Text +"\';";
 		MySqlDataReader reader = null;
-//		if(_conx == null) MessageBox.Show("no _conx");
 		_conx = new MySqlConnection(_connectionString);
-//		if(_conx != null) MessageBox.Show("got a connection");
 		MySqlCommand sql = new MySqlCommand(query, _conx);
 		if(_conx == null) MessageBox.Show("Connection Failed");
 		_conx.Open();
@@ -248,7 +242,7 @@ namespace RhodesEquipment
 					LicBox.Text = Lic;
 					}
 					reader.Close();
-					_conx.Close(); // Added
+					_conx.Close(); 
 
 	}
 	void BoxHandler(object sender, System.EventArgs e)
@@ -256,10 +250,7 @@ namespace RhodesEquipment
 		TextBox tb = (TextBox)sender;
 		string query = "SELECT num,style FROM filter_stock WHERE num = \'" + tb.Text +"\';";
 		MySqlDataReader reader = null;
-		//_conx = GetaConnection();
-	//	_conx = new MySqlConnection(_connectionString);
 		_conx = GetaConnection(_connectionString);
-		//_conx.Open();
 		MySqlCommand sql = new MySqlCommand(query, _conx);
 		reader = sql.ExecuteReader();
 		string num = null;
@@ -276,8 +267,6 @@ namespace RhodesEquipment
 					} else
 					{
 						MessageBox.Show("We Should Add This Filter...");
-						//af = new AddFilter(_conx);
-						//af.Show();
 						tb.BackColor = Color.Red;
 
 					}
@@ -289,12 +278,10 @@ namespace RhodesEquipment
 	}
 	void AddEquipClick(object sender, System.EventArgs e)
 	{
-//		MessageBox.Show("Adding Equipment");
 			try
 			{
 			MySqlCommand sql = new MySqlCommand();
 			_conx = GetaConnection(_connectionString); // Added
-			//_conx = new MySqlConnection(_connectionString); // Added
 			sql.Connection = _conx;  
 
 			if(_conx == null) MessageBox.Show("No Connection");
@@ -302,7 +289,6 @@ namespace RhodesEquipment
 				
 			sql.Prepare();
 			sql.Parameters.AddWithValue("@num", EquipNumBox.Text);
-			//sql.Parameters.AddWithValue("@equip", eq_num_cb.SelectedItem.ToString());
 			sql.Parameters.AddWithValue("@year", Int32.Parse(YearBox.Text));
 			sql.Parameters.AddWithValue("@make", MakeBox.Text);
 			sql.Parameters.AddWithValue("@model", ModelBox.Text);
@@ -313,7 +299,7 @@ namespace RhodesEquipment
 
 			sql.ExecuteNonQuery();
 			sql.Dispose();
-			_conx.Close(); // Added
+			_conx.Close(); 
 			
 		} catch (MySqlException ex)
 		 {
@@ -353,79 +339,16 @@ namespace RhodesEquipment
 			q += ",('" +IdBox.Text+"',(SELECT style FROM filter_stock WHERE num = '" +TranFilBox.Text+"'),'6')";
 		q +=";";
 		MessageBox.Show(q);
-	/*		try
-			{
-		MySqlCommand sql = new MySqlCommand(q, _conx);
-			if(_conx == null) MessageBox.Show("No Connection");
-			MessageBox.Show("Here We Go");
-			sql.ExecuteNonQuery();
-			MessageBox.Show("Added!");
-			
-		} catch (MySqlException ex)
-		 {
-			MessageBox.Show("Error: " +ex.ToString());
-		}  */
-		
-	}
-
-	
-//}// End Class Changed
-	/////////////////////////////////////////////////////////////////////*		static void getConnection()
-/*
-		{
-
-		string connectionString =
-			"Server=localhost;" +
-			"Database=equip;" +
-			"User ID=shop;" +
-			"Password=shop;" +
-			"Pooling=false";
-		conx = new MySqlConnection(connectionString);
-		conx.Open();
-		if(conx == null)
-		Console.WriteLine("Database Connection Failed...");
-		}*/
-/*			try
-			{
-			MySqlCommand sql = new MySqlCommand(query, _conx);
-			//sql.Connection = _conx;
-			//if(_conx == null) MessageBox.Show("No Connection");
-			//	sql.CommandText = query;
-				
-			sql.Prepare();
-			/*sql.Parameters.AddWithValue("@num", EquipNumBox.Text);
-			//sql.Parameters.AddWithValue("@equip", eq_num_cb.SelectedItem.ToString());
-			sql.Parameters.AddWithValue("@year", Int32.Parse(YearBox.Text));
-			sql.Parameters.AddWithValue("@make", MakeBox.Text);
-			sql.Parameters.AddWithValue("@model", ModelBox.Text);
-			sql.Parameters.AddWithValue("@vin", VinBox.Text);
-			sql.Parameters.AddWithValue("@lic", LicBox.Text);
-			sql.Parameters.AddWithValue("@ser", VinBox.Text);
-			sql.Parameters.AddWithValue("@annual", 2018);
-
-			sql.ExecuteNonQuery();
-			
-		} catch (MySqlException ex)
-		 {
-			MessageBox.Show("Error: " +ex.ToString());
-		}
-	}*/
 	////////////////////////////////////////////////////////////////////
 		static MySqlConnection  GetaConnection(string connectionString)
 		{
 		MySqlConnection conx;
 
-		/*string connectionString =
-			"Server=localhost;" +
-			"Database=equip;" +
-			"Uid=shop;" +
-			"Password=shop;" +
-			"Pooling=false"; */
 		conx = new MySqlConnection(connectionString);
 		conx.Open();
 		if(conx == null)
 		Console.WriteLine("Database Connection Failed...");
 		return (conx);
 		}
-	}// End Class Changed
+	}// End Class 
 }// End namespace
